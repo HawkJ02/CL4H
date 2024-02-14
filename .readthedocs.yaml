@@ -21,6 +21,15 @@ sphinx:
   # Fail on all warnings to avoid broken references
   # fail_on_warning: true
 
+build:
+  image: latest
+  formats: all
+  fail_on_warnings: true
+  clean: true
+  force: false
+  config: source/conf.py
+  output-dir: _build
+
 # Optionally build your docs in additional formats such as PDF and ePub
 # formats:
 #   - pdf
