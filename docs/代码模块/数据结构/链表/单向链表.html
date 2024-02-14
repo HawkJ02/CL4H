@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>单向链表 &mdash; Code Library From HawkJ v1.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+    <link rel="canonical" href="https://hawkj02.github.io/CL4H/代码模块/数据结构/链表/单向链表.html" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5a3fd9cb"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" />
+    <link rel="prev" title="链表常用代码" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Code Library From HawkJ
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">代码模块</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../stm32/index.html">stm32模块</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">数据结构</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">链表常用代码</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">单向链表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Code Library From HawkJ</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">代码模块</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">数据结构</a></li>
+          <li class="breadcrumb-item"><a href="index.html">链表常用代码</a></li>
+      <li class="breadcrumb-item active">单向链表</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/代码模块/数据结构/链表/单向链表.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>单向链表<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<section id="id2">
+<h2>使用场景<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>链表在内存空间中的存储是随机的，通过指针单（双向）连接，相较于内存空间连续的数组，优点在于链表长度不固定（可以add或del），缺点在于不能够像数组一样通过下标的方式查找到节点，而是需要遍历链表。</p>
+<ul class="simple">
+<li><p>裸机程序中用于在C语言中管理相同的对象，比如停车场车辆管理程序中，通过链表节点的增删改查记录车辆的信息。
+<img alt="车辆管理程序案例" src="../../../_images/pic1.png" />
+<em>车辆管理程序案例</em></p></li>
+<li><p>RTOS中的链表是关键部分，无论是线程执行链表，还是将所有的进程间通信（ipc）以及其他对象（object）链接在一起进行管理。</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>代码示例<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>语言：C<br />编译器：Keil5</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="cm">/*停车场管理系统的链表使用案例*/</span>
+<span class="c1">//全局变量 global value</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="p">{</span>
+<span class="w">	</span><span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="w"> </span><span class="o">*</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">char</span><span class="w"> </span><span class="n">car_type</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="w">	</span><span class="kt">char</span><span class="w"> </span><span class="n">car_name</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">year</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">month</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">day</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">hour</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">min</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">sec</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">total_sec</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">head</span><span class="p">{</span>
+<span class="w">	</span><span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="w"> </span><span class="o">*</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">C_Count</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">V_Count</span><span class="p">;</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">I_Count</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/*</span>
+<span class="cm">* 功能：在链表中插入节点</span>
+<span class="cm">* 参数：phead-链表头节点，pnode-等待插入的节点</span>
+<span class="cm">*/</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">LIST_ADD_NODE</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">head</span><span class="w"> </span><span class="o">*</span><span class="n">phead</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="w"> </span><span class="o">*</span><span class="n">pnode</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="k">while</span><span class="p">(</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">)</span>
+<span class="w">		</span><span class="p">{</span>
+<span class="w">			</span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">		</span><span class="p">}</span>
+<span class="w">		</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pnode</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="k">else</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pnode</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="c1">//可以忽略，对头节点结构体的变量进行处理</span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">pnode</span><span class="o">-&gt;</span><span class="n">car_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;C&#39;</span><span class="p">)</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">C_Count</span><span class="w"> </span><span class="o">++</span><span class="p">;</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">I_Count</span><span class="w"> </span><span class="o">--</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">pnode</span><span class="o">-&gt;</span><span class="n">car_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;V&#39;</span><span class="p">)</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">V_Count</span><span class="w"> </span><span class="o">++</span><span class="p">;</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">I_Count</span><span class="w"> </span><span class="o">--</span><span class="p">;</span><span class="w">	</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">* 功能：在链表中删除节点</span>
+<span class="cm">* 参数：phead-链表头节点，number-需要被删除节点结构体中的一* 个变量值，可以是一个唯一的值，比如序号。</span>
+<span class="cm">*/</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">LIST_DEL_NODE</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">head</span><span class="w"> </span><span class="o">*</span><span class="n">phead</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">number</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">	</span><span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="w"> </span><span class="o">*</span><span class="n">pnode</span><span class="p">;</span>
+<span class="w">	</span><span class="c1">//如果头节点没有下一个node</span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">list</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">car_name</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="p">))</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="c1">//只要链表的当前节点还有下一个节点，并且下一节点的车牌号与目标车牌号不相同</span>
+<span class="w">		</span><span class="k">while</span><span class="p">((</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">strcmp</span><span class="p">(</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="o">-&gt;</span><span class="n">car_name</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="p">))</span>
+<span class="w">		</span><span class="p">{</span>
+<span class="w">			</span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">		</span><span class="p">}</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span>
+<span class="w">		</span><span class="p">{</span>
+<span class="w">			</span><span class="n">pnode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">			</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">		</span><span class="p">}</span>
+<span class="w">		</span><span class="k">else</span>
+<span class="w">		</span><span class="p">{</span>
+<span class="w">			</span><span class="c1">//您在试图删除一个不存在的节点</span>
+<span class="w">			</span><span class="k">return</span><span class="p">;</span>
+<span class="w">		</span><span class="p">}</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="k">else</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="n">pnode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">pnode</span><span class="o">-&gt;</span><span class="n">car_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;C&#39;</span><span class="p">)</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">C_Count</span><span class="w"> </span><span class="o">--</span><span class="p">;</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">I_Count</span><span class="w"> </span><span class="o">++</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">pnode</span><span class="o">-&gt;</span><span class="n">car_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;V&#39;</span><span class="p">)</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">V_Count</span><span class="w"> </span><span class="o">--</span><span class="p">;</span>
+<span class="w">		</span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">I_Count</span><span class="w"> </span><span class="o">++</span><span class="p">;</span><span class="w">	</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">* 功能：遍历结构体，根据名称字符串对应节点结构体找到节点</span>
+<span class="cm">* 参数：phead-链表头节点，name-链表中某一节点的名称</span>
+<span class="cm">*/</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="o">*</span><span class="w"> </span><span class="n">LIST_FIND_NODE_BY_NAME</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">head</span><span class="w"> </span><span class="o">*</span><span class="n">phead</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="k">struct</span><span class="w"> </span><span class="nc">node</span><span class="o">*</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">phead</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">car_name</span><span class="p">,</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">			</span><span class="k">return</span><span class="w"> </span><span class="n">p</span><span class="p">;</span>
+<span class="w">		</span><span class="k">else</span>
+<span class="w">			</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="o">-&gt;</span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="p">...</span>
+
+<span class="w">	</span><span class="c1">//创建链表</span>
+<span class="w">	</span><span class="n">car_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">head</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">head</span><span class="p">));</span>
+<span class="w">	</span><span class="n">car_list</span><span class="o">-&gt;</span><span class="n">I_Count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IDLE_Count</span><span class="p">;</span>
+<span class="w">	</span><span class="n">car_list</span><span class="o">-&gt;</span><span class="n">C_Count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CNBR_Count</span><span class="p">;</span>
+<span class="w">	</span><span class="n">car_list</span><span class="o">-&gt;</span><span class="n">V_Count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VNBR_Count</span><span class="p">;</span>
+
+<span class="w">	</span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>注意事项<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>如果将新malloc的指针变量存储到链表中后不要free掉这个这个指针变量，因为这个指针变量代表的是一块内存空间的起始地址，这块内存空间中是有数据的。否则下一次malloc很有可能会再次malloc到这个地方，但是此处是有数据的，就会导致覆盖。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="index.html" class="btn btn-neutral float-left" title="链表常用代码" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2024, www.hawkjgogogo.com。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
