@@ -6,6 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+html_baseurl = 'https://hawkj02.github.io/CL4H/'
+
 project = 'Code Library From HawkJ'
 copyright = '2024, www.hawkjgogogo.com'
 author = 'HawkJ'

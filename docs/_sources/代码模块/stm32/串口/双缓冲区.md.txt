@@ -1,2 +1,76 @@
 # 双缓冲区
-## 这是双缓冲区模块
+
+## 使用场景
+
+在裸机程序中使用**IDLE空闲中断**串口接收时，同时程序也在循环中不断处理数据。如果刚好运行到数据处理结束，即将清空数据的时候，串口中断产生，并带来了新的数据，返回后新数据就会被清除，导致**ERROR发生**。
+
+## 原理
+通过设置两个缓冲区以及两个缓冲区指针进行交替，一个用于接收数据，另一个用于处理数据，这样就可以一定程度上解决串口中断刚接收到数据就被清空的问题，因为我们接收到的数据存储在接收buffer中，而清空的buffer是数据处理buffer，而这两个buffer在串口接收完数据后角色互换：
+
+## 代码示例
+语言：C
+编译器：Keil5
+stm32库：HAL-1.5.x
+串口：UART1
+
+```C
+//全局变量定义 global value
+//串口接收buffer
+uint8_t rec_buffer1[256];
+uint8_t rec_buffer2[256];
+uint8_t *current_buffer = rec_buffer1;
+uint8_t *processing_buffer = rec_buffer2;
+
+//数据处理示例函数
+void Data_Proc(void)
+{
+    ...
+
+    //对processing_buffer进行处理
+    //举例
+	//if(strlen((char *)processing_buffer) == 22){}
+
+    //清空
+    memset(processing_buffer,0,256*sizeof(char));
+
+    ...
+}
+
+//系统初始化函数
+void Sys_Init(void)
+{
+    ...
+
+    HAL_UART_Init(&huart1);
+	
+	//IDLE接收不定长数据
+	HAL_UARTEx_ReceiveToIdle_DMA(&huart1,current_buffer,256);
+
+    ...
+
+}
+
+//串口中断返回函数
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+	if(huart == &huart1)
+	{
+		if(current_buffer == rec_buffer1)
+		{
+			current_buffer = rec_buffer2;
+			processing_buffer = rec_buffer1;
+		}
+		else if(current_buffer == rec_buffer2)
+		{
+			current_buffer = rec_buffer1;
+			processing_buffer = rec_buffer2;
+		}
+	}
+	HAL_UARTEx_ReceiveToIdle_DMA(&huart1,current_buffer,256);
+}	
+
+```
+
+## 注意事项
+使用双缓冲区接收，开启的空闲接收中断的buffer长度要足够，否则就会导致进入多次接收函数，使双缓冲区再次翻转。  
+因为空闲中断的最后一个参数是最大一次性接收的数据长度，如果数据过长，则会多次进入该函数进行接收，会导致数据覆盖、双缓冲区重置等问题，所以需要根据我们已知接收数据的长度设置这个参数。

@@ -4,11 +4,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>双缓冲区 &mdash; Code Library v1.0 文档</title>
+  <title>双缓冲区 &mdash; Code Library From HawkJ v1.0 文档</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
   
+    <link rel="canonical" href="https://hawkj02.github.io/CL4H/代码模块/stm32/串口/双缓冲区.html" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -34,7 +35,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Code Library
+            Code Library From HawkJ
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -64,7 +65,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Code Library</a>
+          <a href="../../../index.html">Code Library From HawkJ</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -88,7 +89,79 @@
   <section id="id1">
 <h1>双缓冲区<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
 <section id="id2">
-<h2>这是双缓冲区模块<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>使用场景<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>在裸机程序中使用<strong>IDLE空闲中断</strong>串口接收时，同时程序也在循环中不断处理数据。如果刚好运行到数据处理结束，即将清空数据的时候，串口中断产生，并带来了新的数据，返回后新数据就会被清除，导致<strong>ERROR发生</strong>。</p>
+</section>
+<section id="id3">
+<h2>原理<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>通过设置两个缓冲区以及两个缓冲区指针进行交替，一个用于接收数据，另一个用于处理数据，这样就可以一定程度上解决串口中断刚接收到数据就被清空的问题，因为我们接收到的数据存储在接收buffer中，而清空的buffer是数据处理buffer，而这两个buffer在串口接收完数据后角色互换：</p>
+</section>
+<section id="id4">
+<h2>代码示例<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>语言：C
+编译器：Keil5
+stm32库：HAL-1.5.x
+串口：UART1</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">//全局变量定义 global value</span>
+<span class="c1">//串口接收buffer</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">rec_buffer1</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">rec_buffer2</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">current_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rec_buffer1</span><span class="p">;</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">processing_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rec_buffer2</span><span class="p">;</span>
+
+<span class="c1">//数据处理示例函数</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">Data_Proc</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+
+<span class="w">    </span><span class="c1">//对processing_buffer进行处理</span>
+<span class="w">    </span><span class="c1">//举例</span>
+<span class="w">	</span><span class="c1">//if(strlen((char *)processing_buffer) == 22){}</span>
+
+<span class="w">    </span><span class="c1">//清空</span>
+<span class="w">    </span><span class="n">memset</span><span class="p">(</span><span class="n">processing_buffer</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">256</span><span class="o">*</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">char</span><span class="p">));</span>
+
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+
+<span class="c1">//系统初始化函数</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">Sys_Init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+
+<span class="w">    </span><span class="n">HAL_UART_Init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart1</span><span class="p">);</span>
+<span class="w">	</span>
+<span class="w">	</span><span class="c1">//IDLE接收不定长数据</span>
+<span class="w">	</span><span class="n">HAL_UARTEx_ReceiveToIdle_DMA</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart1</span><span class="p">,</span><span class="n">current_buffer</span><span class="p">,</span><span class="mi">256</span><span class="p">);</span>
+
+<span class="w">    </span><span class="p">...</span>
+
+<span class="p">}</span>
+
+<span class="c1">//串口中断返回函数</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HAL_UARTEx_RxEventCallback</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="k">if</span><span class="p">(</span><span class="n">huart</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">&amp;</span><span class="n">huart1</span><span class="p">)</span>
+<span class="w">	</span><span class="p">{</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">current_buffer</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rec_buffer1</span><span class="p">)</span>
+<span class="w">		</span><span class="p">{</span>
+<span class="w">			</span><span class="n">current_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rec_buffer2</span><span class="p">;</span>
+<span class="w">			</span><span class="n">processing_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rec_buffer1</span><span class="p">;</span>
+<span class="w">		</span><span class="p">}</span>
+<span class="w">		</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">current_buffer</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rec_buffer2</span><span class="p">)</span>
+<span class="w">		</span><span class="p">{</span>
+<span class="w">			</span><span class="n">current_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rec_buffer1</span><span class="p">;</span>
+<span class="w">			</span><span class="n">processing_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rec_buffer2</span><span class="p">;</span>
+<span class="w">		</span><span class="p">}</span>
+<span class="w">	</span><span class="p">}</span>
+<span class="w">	</span><span class="n">HAL_UARTEx_ReceiveToIdle_DMA</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart1</span><span class="p">,</span><span class="n">current_buffer</span><span class="p">,</span><span class="mi">256</span><span class="p">);</span>
+<span class="p">}</span><span class="w">	</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h2>注意事项<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>使用双缓冲区接收，开启的空闲接收中断的buffer长度要足够，否则就会导致进入多次接收函数，使双缓冲区再次翻转。<br />因为空闲中断的最后一个参数是最大一次性接收的数据长度，如果数据过长，则会多次进入该函数进行接收，会导致数据覆盖、双缓冲区重置等问题，所以需要根据我们已知接收数据的长度设置这个参数。</p>
 </section>
 </section>
 
