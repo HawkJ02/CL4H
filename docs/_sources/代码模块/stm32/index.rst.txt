@@ -5,3 +5,4 @@ stm32模块
   :maxdepth: 1
 
   串口/index
+  IAP/index
