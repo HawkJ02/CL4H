@@ -16,8 +16,10 @@ release = 'v1.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-#extensions = []
-extensions = ['recommonmark','sphinx_markdown_tables']
+# 这里是定义插件的地方，分别是支持markdown的插件和支持markdown表格的插件
+extensions = ['recommonmark',
+			  'sphinx_markdown_tables',			
+]
 
 templates_path = ['_templates']
 exclude_patterns = []
