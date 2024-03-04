@@ -6,3 +6,5 @@ stm32模块
 
   串口/index
   IAP/index
+  FSMC/index
+  截屏/index
